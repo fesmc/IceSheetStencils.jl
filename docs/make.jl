@@ -18,8 +18,9 @@ makedocs(
         "Home"   => "index.md",
         "Theory" => "theory.md",
         "Discretization" => [
-            "Overview"      => "discretization/index.md",
-            "C-grid (SSA)"  => "discretization/c_grid.md",
+            "Overview"                       => "discretization/index.md",
+            "C-grid (SSA)"                   => "discretization/c_grid.md",
+            "Extending to a realistic solver" => "discretization/extending.md",
         ],
         "API reference" => "api.md",
     ],
