@@ -60,9 +60,10 @@ pushes triplets into a `SparseMatrixCSC`.
 
 | Name | Status | Description |
 |---|---|---|
-| [Arakawa C-grid, SSA, periodic BCs](c_grid.md) | implemented | Centred FD on a staggered grid; the only stencil currently shipped. |
-| C-grid, SSA, Dirichlet / Neumann BCs | planned | Will reuse `StencilSpec` with boundary-marker logic in `assemble_ssa`. |
-| C-grid, SIA / BP / DIVA            | future | Each adds a new `derive_*_residual` function; rest of pipeline is unchanged. |
+| [Arakawa C-grid, SSA, periodic BCs](c_grid.md)            | implemented | Centred FD on a staggered grid; the only stencil currently shipped. |
+| [C-grid SSA with realistic BCs and ice masks](extending.md) | design notes | Dirichlet inflows, calving-front traction, and ice / no-ice masks — what extending the current pipeline to a production solver would entail. |
+| C-grid, SIA / BP / DIVA                                   | future | Each adds a new `derive_*_residual` function; rest of pipeline is unchanged. |
 
 If you want to inspect the existing implementation in detail, jump to the
-[C-grid SSA stencil](c_grid.md).
+[C-grid SSA stencil](c_grid.md). For the design that turns it into a
+realistic solver, see [Extending to a realistic solver](extending.md).
