@@ -62,7 +62,7 @@ depends only on the geometry ``(H, s)`` and the constants ``(\rho, g)``.
 
 Self-adjointness of the operator implies the assembled discrete matrix is
 symmetric — a property the package's tests verify on a periodic grid (see
-[Validation](index.md#Validation)).
+[Validation](../index.md#Validation)).
 
 ## Nonlinearity
 

@@ -9,10 +9,12 @@ for ice-sheet model approximations, built on
 [Symbolics.jl](https://github.com/JuliaSymbolics/Symbolics.jl).
 
 The first stencil implemented is the [Shallow Shelf Approximation
-(SSA)](theory.md) momentum balance on an [Arakawa C-grid](discretization/c_grid.md)
-with periodic boundary conditions. See the
-[discretization overview](discretization/index.md) for the design pattern that
-will be reused for additional approximations.
+(SSA)](ssa/theory.md) momentum balance on an [Arakawa C-grid](ssa/discretization/c_grid.md)
+with periodic boundary conditions. A second family of stencils — for the
+[mass-conservation equation with a 2D level-set margin
+tracker](mass_conservation/discretization/levelset.md) — is also provided.
+See the [SSA discretization overview](ssa/discretization/index.md) for the
+design pattern that the rest of the package reuses.
 
 ## Install
 

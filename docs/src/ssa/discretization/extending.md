@@ -153,7 +153,7 @@ extension is concentrated in `assemble_ssa` and in two small new helpers
 ## What stays the same
 
 - The single-stencil [`compile_stencil`](@ref) machinery.
-- The [validation suite](../index.md#Validation): every test stays
+- The [validation suite](../../index.md#Validation): every test stays
   meaningful — periodic-BC consistency, discrete adjointness, MMS
   convergence — and the new boundary code adds its own small tests on top
   (e.g. an MMS in a rectangular domain with prescribed inflow).

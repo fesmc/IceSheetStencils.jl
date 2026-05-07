@@ -28,6 +28,17 @@ SSAFields
 assemble_ssa
 ```
 
+## Mass conservation
+
+```@docs
+MassStencilSpec
+derive_thickness_residual
+derive_thickness_residual_weno5
+derive_levelset_residual
+CompiledMassStencil
+compile_mass_stencil
+```
+
 ## Index
 
 ```@index
