@@ -16,12 +16,20 @@ makedocs(
     ),
     pages = [
         "Home"   => "index.md",
-        "Theory" => "theory.md",
-        "Discretization" => [
-            "Overview"                           => "discretization/index.md",
-            "C-grid (SSA)"                       => "discretization/c_grid.md",
-            "Energy-functional formulation"      => "discretization/energy_functional.md",
-            "Extending to a realistic solver"    => "discretization/extending.md",
+        "SSA" => [
+            "Theory" => "ssa/theory.md",
+            "Discretization" => [
+                "Overview"                        => "ssa/discretization/index.md",
+                "C-grid"                          => "ssa/discretization/c_grid.md",
+                "Energy-functional formulation"   => "ssa/discretization/energy_functional.md",
+                "Extending to a realistic solver" => "ssa/discretization/extending.md",
+            ],
+        ],
+        "Mass conservation" => [
+            "Theory" => "mass_conservation/theory.md",
+            "Discretization" => [
+                "2-D level-set method" => "mass_conservation/discretization/levelset.md",
+            ],
         ],
         "API reference" => "api.md",
     ],
