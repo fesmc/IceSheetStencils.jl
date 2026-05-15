@@ -28,6 +28,19 @@ SSAFields
 assemble_ssa
 ```
 
+## Preconditioners and PCG solvers
+
+```@docs
+AbstractPreconditioner
+apply!
+IdentityPreconditioner
+JacobiPreconditioner
+AbstractPCGSolver
+PCGSolver
+ChronopoulosGearPCGSolver
+solve!
+```
+
 ## Mass conservation
 
 ```@docs

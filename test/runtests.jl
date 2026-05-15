@@ -152,4 +152,93 @@ const ATOL = 1e-8
         @test errs[end] < errs[1] / 8        # absolute error drops ≥ 8× over 4× refinement
     end
 
+    @testset "SPD assembly (assemble_ssa; spd = true)" begin
+        Nx, Ny = 8, 6
+        H = [1000.0 + 100*sin(i)*cos(j) for i in 1:Nx, j in 1:Ny]
+        η = [1e15 * (1 + 0.1*sin(i+j))  for i in 1:Nx, j in 1:Ny]
+        β = [1e9  * (1 + 0.2*cos(i))    for i in 1:Nx, j in 1:Ny]
+        s = [2000.0 + 10*sin(i+2j)      for i in 1:Nx, j in 1:Ny]
+
+        A,  b  = assemble_ssa(SSAFields(H, η, β, s); dx=1e3, dy=1e3)
+        As, bs = assemble_ssa(SSAFields(H, η, β, s); dx=1e3, dy=1e3, spd=true)
+
+        # Sign flip exactly negates the strong-form system.
+        @test As == -A
+        @test bs == -b
+
+        # Symmetric *and* positive-definite for strictly positive β.
+        @test norm(As - As') < 1e-12 * norm(As)
+        rng_vec = [0.7, -1.3, 2.1, 0.0, -0.5, 1.0, 0.3, -2.0, 1.1, 0.4]
+        x_rand  = repeat(rng_vec, outer = ceil(Int, 2Nx*Ny/length(rng_vec)))[1:2Nx*Ny]
+        @test dot(x_rand, As * x_rand) > 0
+    end
+
+    @testset "PCG solvers" begin
+        Nx, Ny = 16, 12
+        H = fill(1000.0, Nx, Ny)
+        η = fill(1e15,   Nx, Ny)
+        β = fill(1e9,    Nx, Ny)
+        s = [10*sin(2π*i/Nx) for i in 1:Nx, j in 1:Ny]
+
+        A, b = assemble_ssa(SSAFields(H, η, β, s); dx=1e3, dy=1e3, spd=true)
+        n = size(A, 1)
+        x_ref = A \ b
+
+        @testset "Jacobi preconditioner: M⁻¹ matches inv(diag)" begin
+            P = JacobiPreconditioner(A)
+            r = randn(n); z = similar(r)
+            apply!(z, P, r)
+            @test z ≈ r ./ diag(A)
+        end
+
+        @testset "Standard PCG agrees with direct solve" begin
+            sol = PCGSolver(A; tol=1e-12, maxiter=2n)
+            x = zeros(n)
+            info = solve!(x, sol, A, b)
+            @test info.converged
+            @test norm(x - x_ref) < 1e-6 * norm(x_ref)
+            @test info.iterations ≤ n     # at most n iters for an SPD n×n
+        end
+
+        @testset "Chronopoulos–Gear PCG agrees with direct solve" begin
+            sol = ChronopoulosGearPCGSolver(A; tol=1e-12, maxiter=2n)
+            x = zeros(n)
+            info = solve!(x, sol, A, b)
+            @test info.converged
+            @test norm(x - x_ref) < 1e-6 * norm(x_ref)
+            @test info.iterations ≤ n
+        end
+
+        @testset "Standard vs Chronopoulos–Gear: same iterates" begin
+            sol1 = PCGSolver(A; tol=1e-14, maxiter=2n)
+            sol2 = ChronopoulosGearPCGSolver(A; tol=1e-14, maxiter=2n)
+            x1 = zeros(n); info1 = solve!(x1, sol1, A, b)
+            x2 = zeros(n); info2 = solve!(x2, sol2, A, b)
+            # Both variants are algebraically equivalent — modulo associativity
+            # of dot products and order of fused AXPYs, they should agree to a
+            # few ULPs of the condition number of A.
+            scale = max(norm(x1), 1.0)
+            @test norm(x1 - x2) < 1e-6 * scale
+            @test abs(info1.iterations - info2.iterations) ≤ 2
+        end
+
+        @testset "Iteration count is finite and modest" begin
+            sol = PCGSolver(A; tol=1e-8, maxiter=2n)
+            info = solve!(zeros(n), sol, A, b)
+            @test info.converged
+            # Constant fields ⇒ well-conditioned ⇒ should converge far inside
+            # the Krylov bound. The number 60 is a regression guard, not a tight
+            # theoretical bound.
+            @test info.iterations < 60
+        end
+
+        @testset "IdentityPreconditioner reduces PCG to plain CG" begin
+            sol = PCGSolver(A; P=IdentityPreconditioner(),
+                            tol=1e-10, maxiter=2n)
+            x = zeros(n); info = solve!(x, sol, A, b)
+            @test info.converged
+            @test norm(A*x - b) < 1e-8 * norm(b)
+        end
+    end
+
 end

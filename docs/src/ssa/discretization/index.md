@@ -61,6 +61,8 @@ pushes triplets into a `SparseMatrixCSC`.
 | Name | Status | Description |
 |---|---|---|
 | [Arakawa C-grid, SSA, periodic BCs](c_grid.md)            | implemented | Centred FD on a staggered grid; the only stencil currently shipped. |
+| [Energy-functional formulation](energy_functional.md)     | implemented | Variational derivation of the same stencil from a convex energy ``E[u,v]``; symmetry of ``A`` is built in. |
+| [PCG / Chronopoulos–Gear solver](pcg_solver.md)           | implemented | Iterative SPD solver path that consumes `assemble_ssa(...; spd = true)`; textbook PCG and the one-sync variant used in CISM. |
 | [C-grid SSA with realistic BCs and ice masks](extending.md) | design notes | Dirichlet inflows, calving-front traction, and ice / no-ice masks — what extending the current pipeline to a production solver would entail. |
 | C-grid, SIA / BP / DIVA                                   | future | Each adds a new `derive_*_residual` function; rest of pipeline is unchanged. |
 

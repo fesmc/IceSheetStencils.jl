@@ -22,6 +22,7 @@ makedocs(
                 "Overview"                        => "ssa/discretization/index.md",
                 "C-grid"                          => "ssa/discretization/c_grid.md",
                 "Energy-functional formulation"   => "ssa/discretization/energy_functional.md",
+                "PCG / Chronopoulos–Gear solver"  => "ssa/discretization/pcg_solver.md",
                 "Extending to a realistic solver" => "ssa/discretization/extending.md",
             ],
         ],
