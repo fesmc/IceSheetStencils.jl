@@ -132,6 +132,7 @@ end
 
 """
     assemble_ssa(fields::SSAFields; dx, dy, ρ=910.0, g=9.81,
+                 spd::Bool=false,
                  stencils::SSAStencils=ssa_stencils())
         -> (A::SparseMatrixCSC, b::Vector)
 
@@ -140,10 +141,23 @@ periodic grid, using the C-grid stencil derived symbolically by Symbolics.jl.
 
 The unknown vector is `[u_flat; v_flat]` with column-major flattening of each
 `Nx × Ny` array.
+
+# Sign convention
+
+The default (`spd = false`) follows the strong-form residual ``R(u,v) = 0`` and
+returns a **symmetric negative-definite** ``A`` (membrane, shear and drag all
+contribute with negative sign on the LHS). This is fine for direct solvers, but
+Krylov methods of the CG family need a **positive-definite** operator.
+
+With `spd = true` the routine returns ``(-A, -b)`` instead. This corresponds to
+the energy-functional convention in which ``A`` is the Hessian of the convex
+discrete energy ``E_{disc}`` (see the `Energy-functional formulation` page),
+which is symmetric *positive-definite* for strictly positive ``\\beta``.
 """
 function assemble_ssa(fields::SSAFields{T};
                       dx::Real, dy::Real,
                       ρ::Real = 910.0, g::Real = 9.81,
+                      spd::Bool = false,
                       stencils::SSAStencils = ssa_stencils()) where {T}
     Nx, Ny = size(fields)
     N = Nx * Ny
@@ -204,6 +218,10 @@ function assemble_ssa(fields::SSAFields{T};
         end
     end
 
+    if spd
+        @. Vs = -Vs
+        @. b  = -b
+    end
     A = sparse(Is, Js, Vs, 2 * N, 2 * N)
     return A, b
 end
